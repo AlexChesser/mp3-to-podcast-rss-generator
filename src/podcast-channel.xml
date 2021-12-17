@@ -1,0 +1,18 @@
+<channel>
+    <title></title>
+    <description></description>
+    <itunes:image></itunes:image>
+    <language></language>
+    <itunes:category></itunes:category>
+    <itunes:explicit>False</itunes:explicit>
+    <item>
+        <title></title>
+        <itunes:episode></itunes:episode>
+        <itunes:season></itunes:season>
+        <enclosure
+            url="http://mypodcast.com/episode001.mp3" 
+            length="5650889"
+            type="audio/mpeg"
+        />
+    </item>
+</channel>

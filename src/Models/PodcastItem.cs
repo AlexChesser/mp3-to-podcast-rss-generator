@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Models
+namespace PodcastRSSGenerator.Models
 {
     public class Channel {
         public string title { get; set; }

@@ -1,0 +1,28 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+<style>
+    .book-tile {
+        float: right;
+        margin: 50px;
+        padding: 10px;
+        width: 250px;
+        height: 400px;
+    }
+
+    .cover {
+        width: 100%;
+    }
+</style>
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    @foreach (string tile in ViewBag.Tiles)
+    {
+        <div class="book-tile">
+            <a href="@(ViewBag.Host)@tile">
+                <img class="cover" src="@(ViewBag.Host)@(tile)/tile.jpg" />
+            </a>
+            <span>@tile</span>
+        </div>
+    }
+</div>

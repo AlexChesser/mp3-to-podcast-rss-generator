@@ -3,11 +3,15 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml;
-using Models;
+using PodcastRSSGenerator.Models;
 
-public class MP3FileLoader {
+namespace PodcastRSSGenerator
+{
 
-    private string base_url = "http://192.168.50.112/";
+    public class MP3FileLoader
+    {
+
+        private string base_url = "http://192.168.50.156/books/";
     public Channel LoadFolderAsChannel (string root, string folder) {
         string[] files = Directory.GetFiles(folder);
         Channel c = new Channel();
@@ -16,7 +20,17 @@ public class MP3FileLoader {
         foreach(string f in files){
             FileInfo fi = new FileInfo(f);
             if(fi.Name != "folder.jpg" && (fi.Extension == ".jpg" || fi.Extension == ".png")){
-                c.itunes_image = f.Replace(root, base_url).Replace("\\", "/");
+                    string tile_name = $"{folder}\\tile.jpg";
+                    if (c.itunes_image == null)
+                    {
+                        File.Copy(fi.FullName, tile_name, true);
+                        c.itunes_image = f.Replace(root, base_url).Replace("\\", "/");
+                    }
+                    else if (!c.itunes_image.ToLower().Contains("cover"))
+                    {
+                        File.Copy(fi.FullName, tile_name, true);
+                        c.itunes_image = f.Replace(root, base_url).Replace("\\", "/");
+                    }
             }
             if(f.EndsWith("mp3")){
                 TagLib.File mp3 = TagLib.File.Create(f);
@@ -29,7 +43,7 @@ public class MP3FileLoader {
                     c.description = string.Join("|",tag.AlbumArtists);
                 }
                 c.items.Add(new Item {
-                    Title = tag.Title,
+                    Title = tag.Title != "" ? tag.Title : fi.Name,
                     enclosure = new Enclosure {
                         URL = f.Replace(root, base_url).Replace("\\", "/"),
                         length = fi.Length.ToString(),
@@ -87,3 +101,6 @@ public class MP3FileLoader {
 
     }
 }
+
+}
+

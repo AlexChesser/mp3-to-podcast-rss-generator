@@ -4,10 +4,11 @@ Super simple program for converting a folder of local mp3s into an RSS feed. Cur
 
 # to use this program
 
-1. find the full physical file path of the folder where you keep your Audiobook MP3s edit the value in `mvc\appsettings.json` `PODCAST_FILE_PATH` to be the full file path of that folder
+1. find the full physical file path of the folder where you keep your Audiobook MP3s edit the value in `mvc\appsettings.json` `PODCAST_FILE_PATH` to be the full file path of that folder - note - if you prefer you can use a command line argument for this.
 2. Find your computer's network name for the rest of this guide this will be referred to as `NETWORK_NAME`
 2. ensure you have dotnet 6 installed https://dotnet.microsoft.com/en-us/download
 3. from the project root folder run the command line `dotnet run --urls *:80 --project mvc/mvc.csproj` to start the webserver
+    - an alternative command line will allow you to run an arbitrary folder `dotnet run --urls *:80 /PODCAST_FILE_PATH="[path-to-audiobooks]" --project mvc/mvc.csproj`
 4. browse your list of books on the url `http://[NETWORK_NAME]`
 5. select the book you want to listen to
 6. in find the file `podcast.rss.xml` filename and copy the link to that file

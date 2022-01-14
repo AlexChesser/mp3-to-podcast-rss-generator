@@ -13,57 +13,68 @@ namespace PodcastRSSGenerator
     public class MP3FileLoader
     {
         private string base_url;
+        private string root;
+        private Channel c;
 
-        public MP3FileLoader(string podcast_host_url)
+        public MP3FileLoader(string audiobook_storage_root, string podcast_host_url)
         {
             base_url = podcast_host_url;
+            root = audiobook_storage_root;
         }
 
-        public Channel LoadFolderAsChannel(string root, string folder)
+        private void HandleMP3(string f, FileInfo fi)
+        {
+            TagLib.File mp3 = TagLib.File.Create(f);
+            TagLib.Tag tag = mp3.Tag;
+            if (!c.HasFirst)
+            {
+                c.title = tag.Album;
+                c.language = "English";
+                c.itunes_category = new string[] { "General" };//tag.Genres;
+                c.description = string.Join("|", tag.AlbumArtists);
+            }
+            c.items.Add(new Item
+            {
+                Title = tag.Title != "" ? tag.Title : fi.Name,
+                enclosure = new Enclosure
+                {
+                    URL = f.Replace(root, base_url).Replace("\\", "/"),
+                    length = fi.Length.ToString(),
+                    mime = "audio/mpeg"
+                }
+            });
+        }
+
+        private void HandleImage(string folder, string f, FileInfo fi)
+        {
+            string tile_name = $"{folder}\\tile.jpg";
+            if (c.itunes_image == null)
+            {
+                File.Copy(fi.FullName, tile_name, true);
+                c.itunes_image = f.Replace(root, base_url).Replace("\\", "/");
+            }
+            else if (!c.itunes_image.ToLower().Contains("cover"))
+            {
+                File.Copy(fi.FullName, tile_name, true);
+                c.itunes_image = f.Replace(root, base_url).Replace("\\", "/");
+            }
+        }
+
+        public Channel LoadFolderAsChannel(string folder)
         {
             string[] files = Directory.GetFiles(folder);
-            Channel c = new Channel();
+            c = new();
             c.items = new List<Item>();
-            bool first = true;
             foreach (string f in files)
             {
                 FileInfo fi = new FileInfo(f);
                 if (fi.Name != "folder.jpg" && (fi.Extension == ".jpg" || fi.Extension == ".png"))
                 {
-                    string tile_name = $"{folder}\\tile.jpg";
-                    if (c.itunes_image == null)
-                    {
-                        File.Copy(fi.FullName, tile_name, true);
-                        c.itunes_image = f.Replace(root, base_url).Replace("\\", "/");
-                    }
-                    else if (!c.itunes_image.ToLower().Contains("cover"))
-                    {
-                        File.Copy(fi.FullName, tile_name, true);
-                        c.itunes_image = f.Replace(root, base_url).Replace("\\", "/");
-                    }
+                    HandleImage(folder, f, fi);
                 }
                 if (f.EndsWith("mp3"))
                 {
-                    TagLib.File mp3 = TagLib.File.Create(f);
-                    TagLib.Tag tag = mp3.Tag;
-                    if (first)
-                    {
-                        first = false;
-                        c.title = tag.Album;
-                        c.language = "English";
-                        c.itunes_category = new string[] { "General" };//tag.Genres;
-                        c.description = string.Join("|", tag.AlbumArtists);
-                    }
-                    c.items.Add(new Item
-                    {
-                        Title = tag.Title != "" ? tag.Title : fi.Name,
-                        enclosure = new Enclosure
-                        {
-                            URL = f.Replace(root, base_url).Replace("\\", "/"),
-                            length = fi.Length.ToString(),
-                            mime = "audio/mpeg"
-                        }
-                    });
+                    HandleMP3(f, fi);
                 }
             }
             return c;

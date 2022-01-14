@@ -26,8 +26,8 @@ public class HomeController : Controller
         Console.WriteLine($"Attempting to build RSS feed: {d}\\podcast.rss.xml");
         try
         {
-            MP3FileLoader m = new(host);
-            Channel c = m.LoadFolderAsChannel(root, d);
+            MP3FileLoader m = new(root, host);
+            Channel c = m.LoadFolderAsChannel(d);
             System.IO.File.WriteAllText(@$"{d}\podcast.rss.xml", m.PodCastText(c));
         }
         catch (Exception)

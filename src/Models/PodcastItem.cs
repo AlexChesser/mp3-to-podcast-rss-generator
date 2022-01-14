@@ -11,6 +11,13 @@ namespace PodcastRSSGenerator.Models
         public string[] itunes_category { get; set; }
         public string itunes_explicit { get; set; }
         public List<Item> items { get; set; }
+        public bool HasFirst
+        {
+            get
+            {
+                return !string.IsNullOrWhiteSpace(this.title);
+            }
+        }
     }
 
     public class Item
